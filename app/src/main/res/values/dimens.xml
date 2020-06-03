@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="corner_radius">8dp</dimen>
+    <dimen name="card_elevation">4dp</dimen>
+    <dimen name="common_margin">16dp</dimen>
+    <dimen name="common_margin_innerview">8dp</dimen>
+    <dimen name="margin_top">8dp</dimen>
+    <dimen name="margin_btm">8dp</dimen>
+    <dimen name="progressbar">32dp</dimen>
+</resources>
