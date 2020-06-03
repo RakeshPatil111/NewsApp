@@ -1,11 +1,15 @@
 package com.example.newsapp.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.LivePagedListBuilder
+import androidx.paging.PagedList
 import com.example.newsapp.model.Article
 import com.example.newsapp.model.NewsResponse
 import com.example.newsapp.repository.NewsRepository
+import com.example.newsapp.repository.datasource.ArticleDataSourceFactory
 import com.example.newsapp.util.Resource
 import kotlinx.coroutines.launch
 import retrofit2.Response
@@ -22,8 +26,19 @@ class NewsViewModel(
     var searchPageNumber = 1
     var searchNewsResponse : NewsResponse? = null
 
+    lateinit var articles : LiveData<PagedList<Article>>
+    private var articleDataSourceFactory : ArticleDataSourceFactory
+
     init {
-        getBreakingNews("in")
+        //getBreakingNews("in")
+        articleDataSourceFactory = ArticleDataSourceFactory(viewModelScope)
+        val config = PagedList.Config.Builder()
+            .setPageSize(50)
+            .setInitialLoadSizeHint(5)
+            .setPrefetchDistance(2)
+            .setEnablePlaceholders(false)
+            .build()
+        articles = LivePagedListBuilder<Int, Article>(articleDataSourceFactory, config).build()
     }
 
     fun getBreakingNews(countryCode : String) = viewModelScope.launch {
@@ -80,5 +95,9 @@ class NewsViewModel(
 
     fun deleteArticle(article: Article) = viewModelScope.launch {
         newsRepository.delete(article)
+    }
+
+    fun getBreakingNews() : LiveData<PagedList<Article>> {
+        return articles
     }
 }
