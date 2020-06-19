@@ -27,18 +27,18 @@ class NewsViewModel(
     var searchNewsResponse : NewsResponse? = null
 
     lateinit var articles : LiveData<PagedList<Article>>
-    private var articleDataSourceFactory : ArticleDataSourceFactory
+    //private var articleDataSourceFactory : ArticleDataSourceFactory
 
     init {
-        //getBreakingNews("in")
-        articleDataSourceFactory = ArticleDataSourceFactory(viewModelScope)
+        getBreakingNews("in")
+        /*articleDataSourceFactory = ArticleDataSourceFactory(viewModelScope)
         val config = PagedList.Config.Builder()
             .setPageSize(50)
             .setInitialLoadSizeHint(5)
             .setPrefetchDistance(2)
             .setEnablePlaceholders(false)
             .build()
-        articles = LivePagedListBuilder<Int, Article>(articleDataSourceFactory, config).build()
+        articles = LivePagedListBuilder<Int, Article>(articleDataSourceFactory, config).build()*/
     }
 
     fun getBreakingNews(countryCode : String) = viewModelScope.launch {

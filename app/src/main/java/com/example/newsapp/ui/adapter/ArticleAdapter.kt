@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -19,17 +20,19 @@ import kotlinx.android.synthetic.main.item_article.view.*
 
 class ArticleAdapter : RecyclerView.Adapter<ArticleAdapter.ArticleViewHolder>() {
 
-    inner class ArticleViewHolder(view: View) : RecyclerView.ViewHolder(view)
+    companion object {
+        private val diffUtilCallback = object : DiffUtil.ItemCallback<Article>() {
+            override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {
+                return oldItem.url == newItem.url
+            }
 
-    private val diffUtilCallback = object : DiffUtil.ItemCallback<Article>() {
-        override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {
-            return oldItem.url == newItem.url
-        }
-
-        override fun areContentsTheSame(oldItem: Article, newItem: Article) : Boolean {
-            return newItem.title == oldItem.title
+            override fun areContentsTheSame(oldItem: Article, newItem: Article) : Boolean {
+                return newItem.title == oldItem.title
+            }
         }
     }
+
+    inner class ArticleViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
     val differ = AsyncListDiffer(this, diffUtilCallback)
 
@@ -46,7 +49,7 @@ class ArticleAdapter : RecyclerView.Adapter<ArticleAdapter.ArticleViewHolder>() 
         var article = differ.currentList[position]
         holder.itemView.apply {
             Glide.with(context)
-                .load(article.urlToImage)
+                .load(article?.urlToImage)
                 .listener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(
                         e: GlideException?,
@@ -72,32 +75,36 @@ class ArticleAdapter : RecyclerView.Adapter<ArticleAdapter.ArticleViewHolder>() 
                 }
                 )
                 .into(ivArticle)
-            tvArtiCleTitle.text = article.title
-            tvSource.text = article.source?.name
-            tvPublished.text = article.publishedAt
-            setOnClickListener { onItemClickListener?.let { it(article) } }
+            tvArtiCleTitle.text = article?.title
+            tvSource.text = article?.source?.name
+            tvPublished.text = article?.publishedAt
+            setOnClickListener { onItemClickListener?.let { article?.let { it1 -> it(it1) } } }
             ivSave.setOnClickListener {
 
-                if (ivSave.getTag().toString().toInt() == 0) {
+                if (ivSave.tag.toString().toInt() == 0) {
                     ivSave.tag = 1
                     Toast.makeText(context, "save", Toast.LENGTH_SHORT).show()
                     ivSave.setImageDrawable(resources.getDrawable(R.drawable.ic_saved))
                     onArticleSaveClick?.let {
-                        it(article)
+                        if (article != null) {
+                            it(article)
+                        }
                     }
                 }
                 else {
                     ivSave.tag = 0
                     ivSave.setImageDrawable(resources.getDrawable(R.drawable.ic_save))
                     onArticleDeleteClick?.let {
-                        it(article)
+                        if (article != null) {
+                            it(article)
+                        }
                     }
                 }
             }
 
             ivShare.setOnClickListener {
                 onShareNewsClick?.let {
-                    it(article)
+                    article?.let { it1 -> it(it1) }
                 }
             }
         }

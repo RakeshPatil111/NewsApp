@@ -32,10 +32,6 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
     lateinit var newsAdapter : ArticleAdapter
     val TAG = "BreakingNewsFragment"
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     private fun setupRecyclerView() {
         newsAdapter = ArticleAdapter()
         rvBreakingNews.apply {
@@ -98,5 +94,16 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
                 }
             }
         })
+
+       /* viewModel.getBreakingNews().observe(viewLifecycleOwner, Observer {
+            if (it.size > 0) {
+                shimmerFrameLayout.stopShimmerAnimation()
+                shimmerFrameLayout.visibility = View.GONE
+                rvBreakingNews.visibility = View.VISIBLE
+                //newsAdapter.differ.submitList(it)
+                newsAdapter.submitList(it)
+                //newsAdapter.notifyDataSetChanged()
+            }
+        })*/
     }
 }

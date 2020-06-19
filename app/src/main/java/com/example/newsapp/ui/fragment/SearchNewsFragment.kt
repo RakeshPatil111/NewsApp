@@ -13,7 +13,9 @@ import com.example.newsapp.ui.MainActivity
 import com.example.newsapp.ui.adapter.ArticleAdapter
 import com.example.newsapp.util.Constants
 import com.example.newsapp.util.Resource
+import com.example.newsapp.util.shareNews
 import com.example.newsapp.viewmodel.NewsViewModel
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_search_news.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
@@ -37,6 +39,20 @@ class SearchNewsFragment : Fragment(R.layout.fragment_search_news) {
                 putSerializable("article", it)
             }
             findNavController().navigate(R.id.action_searchNewsFragment_to_articleFragment, bundle)
+        }
+
+        newsAdapter.onSaveClickListener {
+            viewModel.insertArticle(it)
+            Snackbar.make(view, "Saved", Snackbar.LENGTH_SHORT).show()
+        }
+
+        newsAdapter.onDeleteClickListener {
+            viewModel.deleteArticle(it)
+            Snackbar.make(view, "Removed", Snackbar.LENGTH_SHORT).show()
+        }
+
+        newsAdapter.onShareNewsClick {
+            shareNews( context, it)
         }
 
         var searchJob: Job? = null
