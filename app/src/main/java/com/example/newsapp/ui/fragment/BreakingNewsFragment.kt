@@ -15,6 +15,7 @@ import com.example.newsapp.util.shareNews
 import com.example.newsapp.viewmodel.NewsViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_breaking_news.*
+import kotlin.random.Random
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -29,7 +30,7 @@ private const val ARG_PARAM2 = "param2"
 class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
 
     lateinit var viewModel: NewsViewModel
-    lateinit var newsAdapter : ArticleAdapter
+    lateinit var newsAdapter: ArticleAdapter
     val TAG = "BreakingNewsFragment"
 
     private fun setupRecyclerView() {
@@ -37,6 +38,34 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
         rvBreakingNews.apply {
             adapter = newsAdapter
             layoutManager = LinearLayoutManager(activity)
+        }
+
+        newsAdapter.setOnItemCLickListener {
+            val bundle = Bundle().apply {
+                putSerializable("article", it)
+            }
+            findNavController().navigate(
+                R.id.action_breakingNewsFragment_to_articleFragment,
+                bundle
+            )
+        }
+
+        newsAdapter.onSaveClickListener {
+            if (it.id == null) {
+                it.id = Random.nextInt(0, 1000);
+            }
+
+            viewModel.insertArticle(it)
+            Snackbar.make(requireView(), "Saved", Snackbar.LENGTH_SHORT).show()
+        }
+
+        newsAdapter.onDeleteClickListener {
+            viewModel.deleteArticle(it)
+            Snackbar.make(requireView(), "Removed", Snackbar.LENGTH_SHORT).show()
+        }
+
+        newsAdapter.onShareNewsClick {
+            shareNews(context, it)
         }
     }
 
@@ -47,28 +76,11 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
 
         setupRecyclerView()
 
-        newsAdapter.setOnItemCLickListener {
-            val bundle = Bundle().apply {
-                putSerializable("article", it)
-            }
-            findNavController().navigate(R.id.action_breakingNewsFragment_to_articleFragment, bundle)
-        }
+        setViewModelObserver()
+    }
 
-        newsAdapter.onSaveClickListener {
-            viewModel.insertArticle(it)
-            Snackbar.make(view, "Saved", Snackbar.LENGTH_SHORT).show()
-        }
-
-        newsAdapter.onDeleteClickListener {
-            viewModel.deleteArticle(it)
-            Snackbar.make(view, "Removed", Snackbar.LENGTH_SHORT).show()
-        }
-
-        newsAdapter.onShareNewsClick {
-            shareNews( context, it)
-        }
-
-        viewModel.breakingNews.observe(viewLifecycleOwner, Observer {newsResponse ->
+    private fun setViewModelObserver() {
+        viewModel.breakingNews.observe(viewLifecycleOwner, Observer { newsResponse ->
             when (newsResponse) {
                 is Resource.Success -> {
                     shimmerFrameLayout.stopShimmerAnimation()
@@ -94,8 +106,7 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
                 }
             }
         })
-
-       /* viewModel.getBreakingNews().observe(viewLifecycleOwner, Observer {
+/* viewModel.getBreakingNews().observe(viewLifecycleOwner, Observer {
             if (it.size > 0) {
                 shimmerFrameLayout.stopShimmerAnimation()
                 shimmerFrameLayout.visibility = View.GONE

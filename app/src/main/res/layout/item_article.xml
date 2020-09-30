@@ -1,15 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/margin_top"
-    android:layout_marginBottom="@dimen/margin_btm"
-    android:layout_marginLeft="@dimen/common_margin"
-    android:layout_marginRight="@dimen/common_margin"
-    app:cardBackgroundColor="@android:color/white"
-    app:cardCornerRadius="@dimen/corner_radius"
-    app:cardElevation="@dimen/card_elevation">
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="article"
+            type="com.example.newsapp.model.Article" />
+    </data>
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_top"
+        android:layout_marginBottom="@dimen/margin_btm"
+        android:layout_marginLeft="@dimen/common_margin"
+        android:layout_marginRight="@dimen/common_margin"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="@dimen/corner_radius"
+        app:cardElevation="@dimen/card_elevation">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -20,6 +28,7 @@
                 android:id="@+id/ivArticle"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
+                loadImage="@{article.urlToImage}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -41,7 +50,8 @@
                 app:layout_constraintBottom_toTopOf="@+id/tvArtiCleTitle"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:visibility="gone"/>
 
             <TextView
                 android:id="@+id/tvArtiCleTitle"
@@ -49,6 +59,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/common_margin_innerview"
+                android:text="@{article.title}"
                 android:ellipsize="end"
                 android:maxLines="2"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -60,6 +71,7 @@
                 style="@style/SubTitleTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@{article.source.name}"
                 android:layout_margin="@dimen/common_margin_innerview"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvArtiCleTitle" />
@@ -69,6 +81,7 @@
                 style="@style/SubTitleTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@{article.publishedAt}"
                 android:layout_margin="@dimen/common_margin_innerview"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvArtiCleTitle" />
@@ -115,4 +128,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/bgLine" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-</com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.card.MaterialCardView>
+
+</layout>

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.databinding.DataBindingUtil
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
@@ -15,6 +16,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.example.newsapp.R
+import com.example.newsapp.databinding.ItemArticleBinding
 import com.example.newsapp.model.Article
 import kotlinx.android.synthetic.main.item_article.view.*
 
@@ -32,83 +34,68 @@ class ArticleAdapter : RecyclerView.Adapter<ArticleAdapter.ArticleViewHolder>() 
         }
     }
 
-    inner class ArticleViewHolder(view: View) : RecyclerView.ViewHolder(view)
+    class ArticleViewHolder(var view: ItemArticleBinding) : RecyclerView.ViewHolder(view.root)
 
     val differ = AsyncListDiffer(this, diffUtilCallback)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        ArticleViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_article, parent, false
-            )
-        )
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) : ArticleViewHolder {
+        val  inflater = LayoutInflater.from(parent.context)
+
+        val view = DataBindingUtil.inflate<ItemArticleBinding>(inflater, R.layout.item_article, parent, false)
+
+        return ArticleViewHolder(view)
+    }
 
     override fun getItemCount() = differ.currentList.size
 
     override fun onBindViewHolder(holder: ArticleViewHolder, position: Int) {
-        var article = differ.currentList[position]
-        holder.itemView.apply {
-            Glide.with(context)
-                .load(article?.urlToImage)
-                .listener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(
-                        e: GlideException?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        holder.itemView.ivLoading.visibility = View.VISIBLE
-                        return true
-                    }
 
-                    override fun onResourceReady(
-                        resource: Drawable?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        dataSource: DataSource?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        holder.itemView.ivLoading.visibility = View.GONE
-                        return false
-                    }
+        val article = differ.currentList[position]
+        holder.view.article = article
 
-                }
-                )
-                .into(ivArticle)
-            tvArtiCleTitle.text = article?.title
-            tvSource.text = article?.source?.name
-            tvPublished.text = article?.publishedAt
-            setOnClickListener { onItemClickListener?.let { article?.let { it1 -> it(it1) } } }
-            ivSave.setOnClickListener {
+        // Item CLick Listener
+        //Bind these click listeners later
 
-                if (ivSave.tag.toString().toInt() == 0) {
-                    ivSave.tag = 1
-                    Toast.makeText(context, "save", Toast.LENGTH_SHORT).show()
-                    ivSave.setImageDrawable(resources.getDrawable(R.drawable.ic_saved))
-                    onArticleSaveClick?.let {
-                        if (article != null) {
-                            it(article)
-                        }
-                    }
-                }
-                else {
-                    ivSave.tag = 0
-                    ivSave.setImageDrawable(resources.getDrawable(R.drawable.ic_save))
-                    onArticleDeleteClick?.let {
-                        if (article != null) {
-                            it(article)
-                        }
-                    }
-                }
-            }
-
-            ivShare.setOnClickListener {
-                onShareNewsClick?.let {
-                    article?.let { it1 -> it(it1) }
+        holder.itemView.setOnClickListener {
+            onItemClickListener?.let {
+                article.let { article ->
+                    it(article)
                 }
             }
         }
+
+        holder.view.ivShare.setOnClickListener {
+            onShareNewsClick?.let {
+                article?.let { it1 -> it(it1) }
+            }
+        }
+
+        holder.view.ivSave.setOnClickListener {
+            if (holder.view.ivSave.tag.toString().toInt() == 0) {
+                holder.view.ivSave.tag = 1
+                holder.view.ivSave.setImageDrawable(it.resources.getDrawable(R.drawable.ic_saved))
+                onArticleSaveClick?.let {
+                    if (article != null) {
+                        it(article)
+                    }
+                }
+            }
+            else {
+                holder.view.ivSave.tag = 0
+                holder.view.ivSave.setImageDrawable(it.resources.getDrawable(R.drawable.ic_save))
+                onArticleDeleteClick?.let {
+                    if (article != null) {
+                        it(article)
+                    }
+                }
+            }
+            onArticleSaveClick?.let {
+                article?.let { it1 -> it(it1) }
+            }
+        }
     }
+
+    var isSave = false
 
     override fun getItemId(position: Int) = position.toLong()
 
@@ -119,8 +106,6 @@ class ArticleAdapter : RecyclerView.Adapter<ArticleAdapter.ArticleViewHolder>() 
     private var onArticleDeleteClick: ((Article) -> Unit)? = null
 
     private var onShareNewsClick: ((Article) -> Unit)? = null
-
-    private var isSaved = false
 
     fun setOnItemCLickListener(listener: ((Article) -> Unit)) {
         onItemClickListener = listener

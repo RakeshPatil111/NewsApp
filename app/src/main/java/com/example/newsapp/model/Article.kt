@@ -15,7 +15,7 @@ import java.io.Serializable
 )
 data class Article(
     @PrimaryKey(autoGenerate = true)
-    var id : Int? = null,
+    var id : Int?= null,
     @SerializedName("author")
     var author: String?,
     @SerializedName("content")
