@@ -25,7 +25,6 @@ import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
 import com.example.newsapp.R
 import com.example.newsapp.model.Article
-import kotlinx.android.synthetic.main.item_article.view.*
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException

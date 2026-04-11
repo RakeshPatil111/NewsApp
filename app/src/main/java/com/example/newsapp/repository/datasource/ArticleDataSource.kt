@@ -43,7 +43,7 @@ class ArticleDataSource(val scope: CoroutineScope) : PageKeyedDataSource<Int, Ar
                     }
                 }
             }catch (exception : Exception) {
-                Log.e("DataSource :: ", exception.message)
+                Log.e("DataSource :: ", exception.message ?: "Unknown error")
             }
         }
     }
@@ -62,7 +62,7 @@ class ArticleDataSource(val scope: CoroutineScope) : PageKeyedDataSource<Int, Ar
                 }
             }
         } catch (exception : Exception) {
-            Log.e("DataSource :: ", exception.message)
+            Log.e("DataSource :: ", exception.message ?: "Unknown error")
         }
     }
 

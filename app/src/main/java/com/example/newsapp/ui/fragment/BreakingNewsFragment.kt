@@ -8,34 +8,25 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.newsapp.R
+import com.example.newsapp.databinding.FragmentBreakingNewsBinding
 import com.example.newsapp.ui.MainActivity
 import com.example.newsapp.ui.adapter.ArticleAdapter
 import com.example.newsapp.util.Resource
 import com.example.newsapp.util.shareNews
 import com.example.newsapp.viewmodel.NewsViewModel
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.fragment_breaking_news.*
 import kotlin.random.Random
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [BreakingNewsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
-
     lateinit var viewModel: NewsViewModel
     lateinit var newsAdapter: ArticleAdapter
     val TAG = "BreakingNewsFragment"
+    private var _binding: FragmentBreakingNewsBinding? = null
+    private val binding get() = _binding!!
 
     private fun setupRecyclerView() {
         newsAdapter = ArticleAdapter()
-        rvBreakingNews.apply {
+        binding.rvBreakingNews.apply {
             adapter = newsAdapter
             layoutManager = LinearLayoutManager(activity)
         }
@@ -71,6 +62,7 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentBreakingNewsBinding.bind(view)
 
         viewModel = (activity as MainActivity).viewModel
 
@@ -83,38 +75,30 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news) {
         viewModel.breakingNews.observe(viewLifecycleOwner, Observer { newsResponse ->
             when (newsResponse) {
                 is Resource.Success -> {
-                    shimmerFrameLayout.stopShimmerAnimation()
-                    shimmerFrameLayout.visibility = View.GONE
-                    //hideProgressBar()
+                    binding.shimmerFrameLayout.stopShimmer()
+                    binding.shimmerFrameLayout.visibility = View.GONE
                     newsResponse.data?.let { news ->
-                        rvBreakingNews.visibility = View.VISIBLE
+                        binding.rvBreakingNews.visibility = View.VISIBLE
                         newsAdapter.differ.submitList(news.articles)
                     }
                 }
 
                 is Resource.Error -> {
-                    shimmerFrameLayout.visibility = View.GONE
-                    //hideProgressBar()
+                    binding.shimmerFrameLayout.visibility = View.GONE
                     newsResponse.message?.let { message ->
                         Log.e(TAG, "Error :: $message")
                     }
                 }
 
                 is Resource.Loading -> {
-                    shimmerFrameLayout.startShimmerAnimation()
-                    //showProgressBar()
+                    binding.shimmerFrameLayout.startShimmer()
                 }
             }
         })
-/* viewModel.getBreakingNews().observe(viewLifecycleOwner, Observer {
-            if (it.size > 0) {
-                shimmerFrameLayout.stopShimmerAnimation()
-                shimmerFrameLayout.visibility = View.GONE
-                rvBreakingNews.visibility = View.VISIBLE
-                //newsAdapter.differ.submitList(it)
-                newsAdapter.submitList(it)
-                //newsAdapter.notifyDataSetChanged()
-            }
-        })*/
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

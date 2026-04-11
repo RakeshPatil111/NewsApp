@@ -10,28 +10,23 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.newsapp.R
+import com.example.newsapp.databinding.FragmentSavedNewsBinding
 import com.example.newsapp.ui.MainActivity
 import com.example.newsapp.ui.adapter.SavedNewsAdapter
 import com.example.newsapp.util.shareNews
 import com.example.newsapp.viewmodel.NewsViewModel
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.fragment_saved_news.*
 
-// TODO: Rename parameter arguments, choose names that match
-
-/**
- * A simple [Fragment] subclass.
- * Use the [SavedNewsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
-
     lateinit var viewModel: NewsViewModel
     lateinit var newsAdapter : SavedNewsAdapter
     val TAG = "SavedNewsFragment"
+    private var _binding: FragmentSavedNewsBinding? = null
+    private val binding get() = _binding!!
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentSavedNewsBinding.bind(view)
 
         setupRecyclerView()
 
@@ -44,15 +39,15 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
         viewModel.getSavedArticles().observe(viewLifecycleOwner, Observer {
             Log.i(TAG, ""+it.size)
             newsAdapter.differ.submitList(it)
-            rvSavedNews.visibility = View.VISIBLE
-            shimmerFrameLayout.stopShimmerAnimation()
-            shimmerFrameLayout.visibility = View.GONE
+            binding.rvSavedNews.visibility = View.VISIBLE
+            binding.shimmerFrameLayout.stopShimmer()
+            binding.shimmerFrameLayout.visibility = View.GONE
         })
     }
 
     private fun setupRecyclerView() {
         newsAdapter = SavedNewsAdapter()
-        rvSavedNews.apply {
+        binding.rvSavedNews.apply {
             adapter = newsAdapter
             layoutManager = LinearLayoutManager(activity)
         }
@@ -67,7 +62,6 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
             shareNews(context, it)
         }
 
-        // Swipe delete
         val onItemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(
             ItemTouchHelper.UP or ItemTouchHelper.DOWN,
             ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
@@ -96,7 +90,12 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news) {
         }
 
         ItemTouchHelper(onItemTouchHelperCallback).apply {
-            attachToRecyclerView(rvSavedNews)
+            attachToRecyclerView(binding.rvSavedNews)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

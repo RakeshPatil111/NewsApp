@@ -18,7 +18,6 @@ import com.bumptech.glide.request.target.Target
 import com.example.newsapp.R
 import com.example.newsapp.databinding.ItemArticleBinding
 import com.example.newsapp.model.Article
-import kotlinx.android.synthetic.main.item_article.view.*
 
 class ArticleAdapter : RecyclerView.Adapter<ArticleAdapter.ArticleViewHolder>() {
 

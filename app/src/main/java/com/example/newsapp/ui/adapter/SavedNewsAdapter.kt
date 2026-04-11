@@ -16,7 +16,6 @@ import com.bumptech.glide.request.target.Target
 import com.example.newsapp.R
 import com.example.newsapp.databinding.ItemSavedNewsBinding
 import com.example.newsapp.model.Article
-import kotlinx.android.synthetic.main.item_article.view.*
 
 class SavedNewsAdapter : RecyclerView.Adapter<SavedNewsAdapter.SavedNewsViewHolder>() {
 

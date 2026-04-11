@@ -25,7 +25,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:duration="1000">
+        app:shimmer_duration="1000">
 
         <LinearLayout
             android:layout_width="match_parent"
